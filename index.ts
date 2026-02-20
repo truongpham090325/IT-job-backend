@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
 import { connectDB } from "./config/database.config";
 const app = express();
 const port = 4000;
@@ -15,12 +16,16 @@ connectDB();
 // Cấu hình CORS
 app.use(
   cors({
-    origin: "*", // cho phép tất cả tên miền truy cập
+    origin: "http://localhost:3000", // Phải chỉ định tên miền cụ thể
+    credentials: true, // Cho phép gửi cookie
   }),
 );
 
 // Cho phép dữ liệu gửi lên dạng json
 app.use(express.json());
+
+// Cấu hình nhận cookie
+app.use(cookieParser());
 
 // Thiết lập đường dẫn
 app.use("/", routes);
