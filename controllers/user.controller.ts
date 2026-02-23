@@ -65,7 +65,7 @@ export const loginPost = async (req: Request, res: Response) => {
       return;
     }
 
-    const tokenUser = jwt.sign(
+    const token = jwt.sign(
       {
         id: existAccount.id,
         email: existAccount.email,
@@ -76,9 +76,11 @@ export const loginPost = async (req: Request, res: Response) => {
       },
     );
 
-    res.cookie("tokenUser", tokenUser, {
+    res.cookie("token", token, {
       maxAge: 24 * 60 * 60 * 1000, // 1 ngày
-      sameSite: "lax",
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // https để true, http để false
+      sameSite: "lax", // Cho phép gửi cookie giữa các tên miền
     });
 
     res.json({

@@ -65,7 +65,7 @@ export const loginPost = async (req: Request, res: Response) => {
       return;
     }
 
-    const tokenCompany = jwt.sign(
+    const token = jwt.sign(
       {
         id: existAccount.id,
         email: existAccount.email,
@@ -76,7 +76,7 @@ export const loginPost = async (req: Request, res: Response) => {
       },
     );
 
-    res.cookie("tokenCompany", tokenCompany, {
+    res.cookie("token", token, {
       maxAge: 24 * 60 * 60 * 1000, // 1 ngày
       httpOnly: true,
       secure: process.env.NODE_ENV === "production", // https để true, http để fasle
