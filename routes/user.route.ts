@@ -1,8 +1,13 @@
 import { Router } from "express";
 import * as userController from "../controllers/user.controller";
 import * as userValidate from "../validates/user.validate";
+import * as authMiddleware from "../middlewares/auth.middleware";
+import multer from "multer";
+import { storage } from "../helpers/clouldinary.helper";
 
 const router = Router();
+
+const upload = multer({ storage: storage });
 
 router.post(
   "/register",
@@ -11,5 +16,13 @@ router.post(
 );
 
 router.post("/login", userValidate.loginPost, userController.loginPost);
+
+router.patch(
+  "/profile",
+  authMiddleware.verifyTokenUser,
+  upload.single("avatar"),
+  userValidate.profilePatch,
+  userController.profilePatch,
+);
 
 export default router;

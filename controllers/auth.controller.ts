@@ -32,6 +32,8 @@ export const check = async (req: Request, res: Response) => {
         id: existAccountUser.id,
         fullName: existAccountUser.fullName,
         email: existAccountUser.email,
+        phone: existAccountUser.phone,
+        avatar: existAccountUser.avatar,
       };
 
       res.json({
