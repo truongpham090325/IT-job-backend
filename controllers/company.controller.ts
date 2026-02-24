@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import AccountCompany from "../model/account-company.model";
 import jwt from "jsonwebtoken";
+import { RequestAccount } from "../interface/request.interface";
 
 export const registerPost = async (req: Request, res: Response) => {
   try {
@@ -86,6 +87,34 @@ export const loginPost = async (req: Request, res: Response) => {
     res.json({
       code: "success",
       message: "Đăng nhập thành công!",
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({
+      code: "error",
+      message: "Dữ liệu không hợp lệ!",
+    });
+  }
+};
+
+export const profilePatch = async (req: RequestAccount, res: Response) => {
+  try {
+    if (req.file) {
+      req.body.logo = req.file.path;
+    } else {
+      delete req.body.logo;
+    }
+
+    await AccountCompany.updateOne(
+      {
+        _id: req.account.id,
+      },
+      req.body,
+    );
+
+    res.json({
+      code: "success",
+      message: "Cập nhập thành công!",
     });
   } catch (error) {
     console.log(error);

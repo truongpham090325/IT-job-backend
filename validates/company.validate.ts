@@ -81,3 +81,42 @@ export const loginPost = (req: Request, res: Response, next: NextFunction) => {
 
   next();
 };
+
+export const profilePatch = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const schema = Joi.object({
+    companyName: Joi.string().required().max(200).messages({
+      "string.empty": "Vui lòng nhập tên công ty!",
+      "string.max": "Tên công ty không được vượt quá 200 ký tự!",
+    }),
+    email: Joi.string().required().email().messages({
+      "string.empty": "Vui lòng nhập email của bạn!",
+      "string.email": "Email không đúng định dạng!",
+    }),
+    city: Joi.string().allow(""),
+    address: Joi.string().allow(""),
+    companyModel: Joi.string().allow(""),
+    companyEmployees: Joi.string().allow(""),
+    workingTime: Joi.string().allow(""),
+    workOvertime: Joi.string().allow(""),
+    phone: Joi.string().allow(""),
+    description: Joi.string().allow(""),
+    logo: Joi.string().allow(""),
+  });
+
+  const { error } = schema.validate(req.body);
+  if (error) {
+    const errorMessage = error.details[0].message;
+
+    res.json({
+      code: "error",
+      message: errorMessage,
+    });
+    return;
+  }
+
+  next();
+};
