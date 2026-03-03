@@ -3,6 +3,7 @@ import AccountUser from "../model/account-user.model";
 import jwt from "jsonwebtoken";
 import { RequestAccount } from "../interface/request.interface";
 import AccountCompany from "../model/account-company.model";
+import City from "../model/city.model";
 
 export const verifyTokenUser = async (
   req: RequestAccount,
@@ -89,6 +90,15 @@ export const verifyTokenComany = async (
     }
 
     req.account = existAccount;
+
+    if (existAccount.city) {
+      const city = await City.findOne({
+        _id: existAccount.city,
+      });
+      if (city) {
+        req.account.companyCity = city.name;
+      }
+    }
 
     next();
   } catch (error) {

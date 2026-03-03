@@ -159,3 +159,42 @@ export const createJobPost = async (req: RequestAccount, res: Response) => {
     });
   }
 };
+
+export const listJob = async (req: RequestAccount, res: Response) => {
+  try {
+    const companyId = req.account.id;
+    const jobs = await Job.find({
+      companyId: companyId,
+    }).sort({
+      createdAt: "desc",
+    });
+
+    const dataFinal = [];
+
+    for (const item of jobs) {
+      dataFinal.push({
+        id: item.id,
+        companyLogo: req.account.logo,
+        title: item.title,
+        companyName: req.account.companyName,
+        salaryMin: item.salaryMin,
+        salaryMax: item.salaryMax,
+        position: item.position,
+        workingForm: item.workingForm,
+        companyCity: req.account.companyCity,
+        technologies: item.technologies,
+      });
+    }
+    res.json({
+      code: "success",
+      message: "Thành công!",
+      jobList: dataFinal,
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({
+      code: "error",
+      message: "Lấy dữ liệu thất bại",
+    });
+  }
+};
