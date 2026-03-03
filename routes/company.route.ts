@@ -25,4 +25,12 @@ router.patch(
   companyController.profilePatch,
 );
 
+router.post(
+  "/job/create",
+  authMiddleware.verifyTokenComany,
+  upload.array("images", 8),
+  companyValidate.createJobPost,
+  companyController.createJobPost,
+);
+
 export default router;
