@@ -211,7 +211,94 @@ export const listJob = async (req: RequestAccount, res: Response) => {
     console.log(error);
     res.json({
       code: "error",
-      message: "Lấy dữ liệu thất bại",
+      message: "Lấy dữ liệu thất bại!",
+    });
+  }
+};
+
+export const editJob = async (req: RequestAccount, res: Response) => {
+  try {
+    const id = req.params.id;
+    const companyId = req.account.id;
+
+    const jobDetail = await Job.findOne({
+      _id: id,
+      companyId: companyId,
+    });
+
+    if (!jobDetail) {
+      res.json({
+        code: "error",
+        message: "Id không hợp lệ!",
+      });
+      return;
+    }
+
+    res.json({
+      code: "success",
+      message: "Thành công!",
+      jobDetail: jobDetail,
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({
+      code: "error",
+      message: "Lấy dữ liệu thất bại!",
+    });
+  }
+};
+
+export const editJobPatch = async (req: RequestAccount, res: Response) => {
+  try {
+    const id = req.params.id;
+    const companyId = req.account.id;
+
+    const jobDetail = await Job.findOne({
+      _id: id,
+      companyId: companyId,
+    });
+
+    if (!jobDetail) {
+      res.json({
+        code: "error",
+        message: "Id không hợp lệ!",
+      });
+      return;
+    }
+
+    req.body.companyId = req.account.id;
+    req.body.salaryMin = req.body.salaryMin ? parseInt(req.body.salaryMin) : 0;
+    req.body.salaryMax = req.body.salaryMax ? parseInt(req.body.salaryMax) : 0;
+    req.body.technologies = req.body.technologies
+      ? req.body.technologies.split(", ")
+      : [];
+    req.body.images = [];
+
+    // Xử lý mảng images
+    if (req.files) {
+      for (const file of req.files as any[]) {
+        req.body.images.push(file.path);
+      }
+    }
+    // Hết Xử lý mảng images
+
+    await Job.updateOne(
+      {
+        _id: id,
+        companyId: companyId,
+      },
+      req.body,
+    );
+
+    res.json({
+      code: "success",
+      message: "Cập nhập thành công!",
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({
+      code: "success",
+      message: "Cập nhập thất bại!",
     });
   }
 };
