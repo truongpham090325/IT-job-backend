@@ -4,6 +4,7 @@ import AccountCompany from "../model/account-company.model";
 import jwt from "jsonwebtoken";
 import { RequestAccount } from "../interface/request.interface";
 import Job from "../model/job.model";
+import City from "../model/city.model";
 
 export const registerPost = async (req: Request, res: Response) => {
   try {
@@ -334,6 +335,53 @@ export const deleteJobDel = async (req: RequestAccount, res: Response) => {
     res.json({
       code: "error",
       message: "Có lỗi khi xóa công việc!",
+    });
+  }
+};
+
+export const list = async (req: Request, res: Response) => {
+  try {
+    let limitItems = 9;
+    if (req.query.limitItems) {
+      limitItems = parseInt(`${req.query.limitItems}`);
+    }
+    const companyList = await AccountCompany.find({}).limit(limitItems);
+    const companyListFinal = [];
+
+    for (const item of companyList) {
+      const dataFinal = {
+        id: item.id,
+        logo: item.logo,
+        companyName: item.companyName,
+        cityName: "",
+        totalJob: 0,
+      };
+
+      // Thành phố
+      const city = await City.findOne({
+        _id: item.city,
+      });
+      dataFinal.cityName = `${city ? city.name : ""}`;
+
+      // Tổng số việc làm
+      const totalJob = await Job.countDocuments({
+        companyId: item.id,
+      });
+      dataFinal.totalJob = totalJob;
+
+      companyListFinal.push(dataFinal);
+    }
+
+    res.json({
+      code: "success",
+      message: "Thành công!",
+      companyList: companyListFinal,
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({
+      code: "error",
+      message: "Lấy dữ liệu Thất bại!",
     });
   }
 };
