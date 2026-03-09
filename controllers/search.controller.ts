@@ -28,7 +28,6 @@ export const search = async (req: Request, res: Response) => {
       }
 
       if (req.query.company) {
-        console.log(req.query.company);
         const company = await AccountCompany.findOne({
           companyName: req.query.company,
         });
@@ -38,6 +37,14 @@ export const search = async (req: Request, res: Response) => {
       if (req.query.keyword) {
         const keywordRegex = new RegExp(`${req.query.keyword}`, "i");
         find.title = keywordRegex;
+      }
+
+      if (req.query.position) {
+        find.position = req.query.position;
+      }
+
+      if (req.query.workingForm) {
+        find.workingForm = req.query.workingForm;
       }
 
       const jobs = await Job.find(find).sort({
