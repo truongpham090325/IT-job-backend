@@ -28,6 +28,7 @@ export const search = async (req: Request, res: Response) => {
       }
 
       if (req.query.company) {
+        console.log(req.query.company);
         const company = await AccountCompany.findOne({
           companyName: req.query.company,
         });
