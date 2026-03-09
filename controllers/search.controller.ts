@@ -105,6 +105,7 @@ export const search = async (req: Request, res: Response) => {
       message: "Thành công!",
       jobs: dataFinal,
       totalPage: totalPage,
+      totalRecord: totalRecord,
     });
   } catch (error) {
     console.log(error);
