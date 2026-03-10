@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import Job from "../model/job.model";
 import AccountCompany from "../model/account-company.model";
+import CV from "../model/cv.model";
 
 export const detail = async (req: Request, res: Response) => {
   try {
@@ -60,6 +61,28 @@ export const detail = async (req: Request, res: Response) => {
     res.json({
       code: "error",
       message: "Không lấy được dữ liệu!",
+    });
+  }
+};
+
+export const applyPost = async (req: Request, res: Response) => {
+  try {
+    if (req.file) {
+      req.body.fileCV = req.file.path;
+    }
+
+    const newRecord = new CV(req.body);
+    await newRecord.save();
+
+    res.json({
+      code: "success",
+      message: "Gửi CV thành công!",
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({
+      code: "error",
+      message: "Dữ liệu không hợp lệ!",
     });
   }
 };
