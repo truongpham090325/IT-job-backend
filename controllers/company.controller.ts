@@ -668,3 +668,24 @@ export const changeStatusCVPatch = async (
     });
   }
 };
+
+export const deleteCVDel = async (req: RequestAccount, res: Response) => {
+  try {
+    const cvId = req.params.id;
+
+    await CV.deleteOne({
+      _id: cvId,
+    });
+
+    res.json({
+      code: "success",
+      message: "Xóa CV thành công!",
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({
+      code: "error",
+      message: "Có lỗi khi xóa CV!",
+    });
+  }
+};
