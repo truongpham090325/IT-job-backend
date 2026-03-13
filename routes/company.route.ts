@@ -69,4 +69,10 @@ router.get(
   companyController.listCV,
 );
 
+router.get(
+  "/cv/detail/:id",
+  authMiddleware.verifyTokenComany,
+  companyController.detailCV,
+);
+
 export default router;

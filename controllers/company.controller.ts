@@ -542,3 +542,74 @@ export const listCV = async (req: RequestAccount, res: Response) => {
     });
   }
 };
+
+export const detailCV = async (req: RequestAccount, res: Response) => {
+  try {
+    const cvId = req.params.id;
+    const companyId = req.account.id;
+
+    const infoCV = await CV.findOne({
+      _id: cvId,
+    });
+
+    if (!infoCV) {
+      res.json({
+        code: "error",
+        message: "Dữ liệu không hợp lệ!",
+      });
+      return;
+    }
+
+    const infoJob = await Job.findOne({
+      _id: infoCV.jobId,
+      companyId: companyId,
+    });
+
+    if (!infoJob) {
+      res.json({
+        code: "error",
+        message: "Dữ liệu không hợp lệ!",
+      });
+      return;
+    }
+
+    const dataFinalCV = {
+      fullName: infoCV.fullName,
+      email: infoCV.email,
+      phone: infoCV.phone,
+      fileCV: infoCV.fileCV,
+    };
+
+    const dataFinalJob = {
+      id: infoJob.id,
+      title: infoJob.title,
+      salaryMin: infoJob.salaryMin,
+      salaryMax: infoJob.salaryMax,
+      position: infoJob.position,
+      workingForm: infoJob.workingForm,
+      technologies: infoJob.technologies,
+    };
+
+    await CV.updateOne(
+      {
+        _id: cvId,
+      },
+      {
+        viewed: true,
+      },
+    );
+
+    res.json({
+      code: "success",
+      message: "Thành công!",
+      cvDetail: dataFinalCV,
+      jobDetail: dataFinalJob,
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({
+      code: "error",
+      message: "Có lỗi!",
+    });
+  }
+};
