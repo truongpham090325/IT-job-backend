@@ -3,6 +3,9 @@ import AccountUser from "../model/account-user.model";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { RequestAccount } from "../interface/request.interface";
+import CV from "../model/cv.model";
+import Job from "../model/job.model";
+import AccountCompany from "../model/account-company.model";
 
 export const registerPost = async (req: Request, res: Response) => {
   try {
@@ -121,6 +124,71 @@ export const profilePatch = async (req: RequestAccount, res: Response) => {
     res.json({
       code: "error",
       message: "Dữ liệu không hợp lệ!",
+    });
+  }
+};
+
+export const listCV = async (req: RequestAccount, res: Response) => {
+  try {
+    const email = req.account.email;
+
+    // Phân trang
+    const limitItems = 3;
+    let page = 1;
+    if (req.query.page && parseInt(`${req.query.page}`) > 0) {
+      page = parseInt(`${req.query.page}`);
+    }
+    const skip = (page - 1) * limitItems;
+    const totalRecord = await CV.countDocuments({
+      email: email,
+    });
+    const totalPage = Math.ceil(totalRecord / limitItems);
+    // Hết Phân trang
+
+    const cvs = await CV.find({
+      email: email,
+    })
+      .sort({
+        createdAt: "desc",
+      })
+      .skip(skip)
+      .limit(limitItems);
+
+    const dataFinal = [];
+    for (const item of cvs) {
+      const jobDetail = await Job.findOne({
+        _id: item.jobId,
+      });
+
+      const companyDetail = await AccountCompany.findOne({
+        _id: jobDetail?.companyId,
+      });
+
+      const itemFinal = {
+        id: item.id,
+        jobTitle: jobDetail?.title,
+        companyName: companyDetail?.companyName,
+        jobSalaryMin: jobDetail?.salaryMin,
+        jobSalaryMax: jobDetail?.salaryMax,
+        jobPosition: jobDetail?.position,
+        jobWorkingForm: jobDetail?.workingForm,
+        status: item.status,
+      };
+
+      dataFinal.push(itemFinal);
+    }
+
+    res.json({
+      code: "success",
+      message: "Thành công!",
+      cvs: dataFinal,
+      totalPage: totalPage,
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({
+      code: "error",
+      message: "Không lấy được dữ liệu!",
     });
   }
 };
