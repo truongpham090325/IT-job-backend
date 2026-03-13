@@ -192,3 +192,32 @@ export const listCV = async (req: RequestAccount, res: Response) => {
     });
   }
 };
+
+export const deleteCVDel = async (req: RequestAccount, res: Response) => {
+  try {
+    const cvId = req.params.id;
+
+    if (!cvId) {
+      res.json({
+        code: "error",
+        messsaeg: "Không thể xóa CV này!",
+      });
+      return;
+    }
+
+    await CV.deleteOne({
+      _id: cvId,
+    });
+
+    res.json({
+      code: "success",
+      message: "Xóa CV thành công!",
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({
+      code: "error",
+      messsaeg: "Không thể xóa CV này!",
+    });
+  }
+};
