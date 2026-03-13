@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 import { RequestAccount } from "../interface/request.interface";
 import Job from "../model/job.model";
 import City from "../model/city.model";
+import CV from "../model/cv.model";
 
 export const registerPost = async (req: Request, res: Response) => {
   try {
@@ -464,6 +465,74 @@ export const detail = async (req: Request, res: Response) => {
       message: "Thành công!",
       companyDetail: companyDetail,
       jobs: dataFinal,
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({
+      code: "error",
+      message: "Không lấy được dữ liệu!",
+    });
+  }
+};
+
+export const listCV = async (req: RequestAccount, res: Response) => {
+  try {
+    const companyId = req.account.id;
+
+    const jobs = await Job.find({
+      companyId: companyId,
+    });
+    const jobListId = jobs.map((item) => item.id);
+
+    // Phân trang
+    const limitItems = 3;
+    let page = 1;
+    if (req.query.page && parseInt(`${req.query.page}`) > 0) {
+      page = parseInt(`${req.query.page}`);
+    }
+    const skip = (page - 1) * limitItems;
+    const totalRecord = await CV.countDocuments({
+      jobId: { $in: jobListId },
+    });
+    const totalPage = Math.ceil(totalRecord / limitItems);
+    // Hết Phân trang
+
+    const cvs = await CV.find({
+      jobId: { $in: jobListId },
+    })
+      .sort({
+        createdAt: "desc",
+      })
+      .skip(skip)
+      .limit(limitItems);
+
+    const dataFinal = [];
+    for (const item of cvs) {
+      const jobDetail = await Job.findOne({
+        _id: item.jobId,
+      });
+
+      const itemFinal = {
+        id: item.id,
+        jobTitle: jobDetail?.title,
+        fullName: item.fullName,
+        email: item.email,
+        phone: item.phone,
+        jobSalaryMin: jobDetail?.salaryMin,
+        jobSalaryMax: jobDetail?.salaryMax,
+        jobPosition: jobDetail?.position,
+        jobWorkingForm: jobDetail?.workingForm,
+        viewed: item.viewed,
+        status: item.status,
+      };
+      dataFinal.push(itemFinal);
+    }
+
+    res.json({
+      code: "success",
+      message: "Thành công!",
+      cvs: dataFinal,
+      totalPage: totalPage,
     });
   } catch (error) {
     console.log(error);
