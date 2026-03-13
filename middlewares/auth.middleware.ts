@@ -54,7 +54,7 @@ export const verifyTokenUser = async (
   }
 };
 
-export const verifyTokenComany = async (
+export const verifyTokenCompany = async (
   req: RequestAccount,
   res: Response,
   next: NextFunction,

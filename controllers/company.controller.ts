@@ -613,3 +613,58 @@ export const detailCV = async (req: RequestAccount, res: Response) => {
     });
   }
 };
+
+export const changeStatusCVPatch = async (
+  req: RequestAccount,
+  res: Response,
+) => {
+  try {
+    const cvId = req.params.id;
+    const companyId = req.account.id;
+    const statusCV = req.body.status;
+    const infoCV = await CV.findOne({
+      _id: cvId,
+    });
+
+    if (!infoCV) {
+      res.json({
+        code: "error",
+        message: "Dữ liệu không hợp lệ!",
+      });
+      return;
+    }
+
+    const infoJob = await Job.findOne({
+      _id: infoCV.jobId,
+      companyId: companyId,
+    });
+
+    if (!infoJob) {
+      res.json({
+        code: "error",
+        message: "Dữ liệu không hợp lệ!",
+      });
+      return;
+    }
+
+    await CV.updateOne(
+      {
+        _id: cvId,
+      },
+      {
+        status: statusCV,
+      },
+    );
+
+    res.json({
+      code: "success",
+      message: "Cập nhập trạng thái thành công!",
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({
+      code: "error",
+      message: "Có lỗi khi cập nhập!",
+    });
+  }
+};

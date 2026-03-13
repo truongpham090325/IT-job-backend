@@ -1,3 +1,4 @@
+import { verifyTokenCompany } from "./../middlewares/auth.middleware";
 import { Router } from "express";
 import * as companyController from "../controllers/company.controller";
 import * as companyValidate from "../validates/company.validate";
@@ -19,7 +20,7 @@ router.post("/login", companyValidate.loginPost, companyController.loginPost);
 
 router.patch(
   "/profile",
-  authMiddleware.verifyTokenComany,
+  authMiddleware.verifyTokenCompany,
   upload.single("logo"),
   companyValidate.profilePatch,
   companyController.profilePatch,
@@ -27,7 +28,7 @@ router.patch(
 
 router.post(
   "/job/create",
-  authMiddleware.verifyTokenComany,
+  authMiddleware.verifyTokenCompany,
   upload.array("images", 8),
   companyValidate.createJobPost,
   companyController.createJobPost,
@@ -35,19 +36,19 @@ router.post(
 
 router.get(
   "/job/list",
-  authMiddleware.verifyTokenComany,
+  authMiddleware.verifyTokenCompany,
   companyController.listJob,
 );
 
 router.get(
   "/job/edit/:id",
-  authMiddleware.verifyTokenComany,
+  authMiddleware.verifyTokenCompany,
   companyController.editJob,
 );
 
 router.patch(
   "/job/edit/:id",
-  authMiddleware.verifyTokenComany,
+  authMiddleware.verifyTokenCompany,
   upload.array("images", 8),
   companyValidate.createJobPost,
   companyController.editJobPatch,
@@ -55,7 +56,7 @@ router.patch(
 
 router.delete(
   "/job/delete/:id",
-  authMiddleware.verifyTokenComany,
+  authMiddleware.verifyTokenCompany,
   companyController.deleteJobDel,
 );
 
@@ -65,14 +66,20 @@ router.get("/detail/:id", companyController.detail);
 
 router.get(
   "/cv/list",
-  authMiddleware.verifyTokenComany,
+  authMiddleware.verifyTokenCompany,
   companyController.listCV,
 );
 
 router.get(
   "/cv/detail/:id",
-  authMiddleware.verifyTokenComany,
+  authMiddleware.verifyTokenCompany,
   companyController.detailCV,
+);
+
+router.patch(
+  "/cv/change-status/:id",
+  authMiddleware.verifyTokenCompany,
+  companyController.changeStatusCVPatch,
 );
 
 export default router;
